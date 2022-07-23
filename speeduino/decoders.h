@@ -35,6 +35,7 @@
 #define DECODER_DRZ400            21
 #define DECODER_NGC               22
 #define DECODER_VMAX              23
+#define DECODER_JEEPYJ4CYL        24
 
 //This isn't to to filter out wrong pulses on triggers, but just to smooth out the cam angle reading for better closed loop VVT control.
 #define ANGLE_FILTER(input, alpha, prior) (((long)input * (256 - alpha) + ((long)prior * alpha))) >> 8
@@ -196,6 +197,13 @@ void triggerSec_NGC4();
 void triggerSec_NGC68();
 uint16_t getRPM_NGC();
 void triggerSetEndTeeth_NGC();
+
+void triggerSetup_JeepYJ4cyl();
+void triggerPri_JeepYJ4cyl();
+void triggerSec_JeepYJ4cyl();
+uint16_t getRPM_JeepYJ4cyl();
+int getCrankAngle_JeepYJ4cyl();
+void triggerSetEndTeeth_JeepYJ4cyl();
 
 extern void (*triggerHandler)(); //Pointer for the trigger function (Gets pointed to the relevant decoder)
 extern void (*triggerSecondaryHandler)(); //Pointer for the secondary trigger function (Gets pointed to the relevant decoder)
