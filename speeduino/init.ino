@@ -3352,6 +3352,15 @@ void initialiseTriggers()
       attachInterrupt(triggerInterrupt, triggerHandler, CHANGE); //Hardcoded change, the primaryTriggerEdge will be used in the decoder to select if it`s an inverted or non-inverted signal.
       break;
 
+    case DECODER_Jeep1994CNP4cyl:
+      triggerSetup_Jeep1994CNP4cyl();
+      triggerHandler = triggerPri_Jeep1994CNP4cyl;
+      triggerSecondaryHandler = triggerSec_Jeep1994CNP4cyl;
+      decoderHasSecondary = true;
+      getRPM = getRPM_Jeep1994CNP4cyl;
+      getCrankAngle = getCrankAngle_Jeep1994CNP4cyl;
+      triggerSetEndTeeth = triggerSetEndTeeth_Jeep1994CNP4cyl;
+
     default:
       triggerHandler = triggerPri_missingTooth;
       getRPM = getRPM_missingTooth;
