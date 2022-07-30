@@ -4846,8 +4846,8 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    if (toothCurrentCount == 0) { crankAngle = 174; } //Happens when cam tooth passes. 236 is the crank angle at which the cam goes high.  However testing of Jeep2000 was improved by using the last tooth angle before the cam goes high so trying 174 here.
-    else { crankAngle = toothAngles[(tempToothCurrentCount - 1)];} //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
+    if (toothCurrentCount == 0) { crankAngle = 174 + configPage4.triggerAngle; } //Happens when cam tooth passes. 236 is the crank angle at which the cam goes high.  However testing of Jeep2000 was improved by using the last tooth angle before the cam goes high so trying 174 here.
+    else { crankAngle = toothAngles[(tempToothCurrentCount - 1)] + configPage4.triggerAngle; } //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
     elapsedTime = (lastCrankAngleCalc - tempToothLastToothTime);
