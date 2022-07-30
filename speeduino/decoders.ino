@@ -4761,19 +4761,18 @@ void triggerSetEndTeeth_Vmax()
 }
 /** @} */
 
-/** Jeep YJ 4cyl - 16 crank teeth over 720 degrees, in groups of 4 (1991 to 1995 4 cylinder port injected Jeep engines modified with Coil Near Plug).
+/** Jeep YJ 4cyl - 16 crank teeth over 720 degrees, in groups of 4 (1991 to 1995 4 cylinder port injected Jeep engines).
 * Cam wheel is high for 360 crank degrees. Very similar to the Jeep2000 6cyl decoder.
+* For this timing within 360 degrees, only 8 tooth angles are defined.
 * Tooth number 1 represents the first tooth seen after the cam signal goes high.
 * https://speeduino.com/forum/download/file.php?id=8470
 * @defgroup dec_jeep4cyl Jeep 4CNP (4 cyl)
 * @{
 */
-/** Jeep4CNP Setup.
- * 
- * */
+
 void triggerSetup_Jeep1994CNP4cyl()
 {
-  //many decoders start with triggerToothAngle but this will first be set when code has found tooth 1 	
+  triggerToothAngle = 0; //arbitrary intial value but this will only be set when code has found tooth 1.
   toothAngles[0] = 294;
   toothAngles[1] = 314;
   toothAngles[2] = 334;
@@ -4782,47 +4781,28 @@ void triggerSetup_Jeep1994CNP4cyl()
   toothAngles[5] = 494;
   toothAngles[6] = 514;
   toothAngles[7] = 534;
-  toothAngles[8] = 654;
-  toothAngles[9] = 674;
-  toothAngles[10] = 694;
-  toothAngles[11] = 714;
-  toothAngles[12] = 114;
-  toothAngles[13] = 134;
-  toothAngles[14] = 154;
-  toothAngles[15] = 174;
 
   MAX_STALL_TIME = (3333UL * 123); //Minimum 50rpm. (3333uS is the time per degree at 50rpm). A 3 degree tolerance on largest gap between any teeth is 123 degrees.
-  if(initialisationComplete == false) { toothCurrentCount = 17; toothLastToothTime = micros(); } //Set a startup value here to avoid filter errors when starting. This MUST have the initial check to prevent the fuel pump just staying on all the time
-  secondDerivEnabled = false;
-  decoderIsSequential = true; //this is converted from stock dizzy to CNP
-  //decoderIsLowRes = true //wondering if extra calcs for decoderIsLowRes would smooth RPM 
+  if(initialisationComplete == false) { toothCurrentCount = 9; toothLastToothTime = micros(); } //Set a startup value here to avoid filter errors when starting. This MUST have the initial check to prevent the fuel pump just staying on all the time
+  secondDerivEnabled = false; 
   triggerToothAngleIsCorrect = true;
 }
 
-/** Jeep4CNP Primary.
- * 
- * */
 void triggerPri_Jeep1994CNP4cyl()
 {
-  if(toothCurrentCount == 17) { currentStatus.hasSync = false; } //Indicates sync has not been achieved (Still waiting for 1 revolution of the crank to take place)
+  if(toothCurrentCount == 9) { currentStatus.hasSync = false; } //Indicates sync has not been achieved (Still waiting for 1 revolution of the crank to take place)
   else
   {
-    //sync check
-	curTime = micros();
+    curTime = micros();
     curGap = curTime - toothLastToothTime;
-    if ( curGap >= triggerFilterTime ) //does trigger filter check, then cam resets tooth count, then tooth count increment
+    if ( curGap >= triggerFilterTime )
     {
-	  //trigger filter
-	  setFilter(curGap); //Recalc the new filter value
-      validTrigger = true; //Flag this pulse as being a valid trigger (ie that it passed filters)
-      toothLastMinusOneToothTime = toothLastToothTime;
-      toothLastToothTime = curTime;
       if(toothCurrentCount == 0)
       {
          toothCurrentCount = 1; //Reset the counter
          toothOneMinusOneTime = toothOneTime;
          toothOneTime = curTime;
-		 revolutionOne = !revolutionOne; //sequential revolution flip
+         revolutionOne = !revolutionOne; //sequential revolution flip
          currentStatus.hasSync = true;
          currentStatus.startRevolutions++; //Counter
          triggerToothAngle = 294; //tooth #1 angle
@@ -4832,20 +4812,19 @@ void triggerPri_Jeep1994CNP4cyl()
         toothCurrentCount++; //Increment the tooth counter
         triggerToothAngle = toothAngles[(toothCurrentCount-1)] - toothAngles[(toothCurrentCount-2)]; //Calculate the last tooth gap in degrees
       }
-    }
-  }
+      setFilter(curGap); //Recalc the new filter value
+      validTrigger = true; //Flag this pulse as being a valid trigger (ie that it passed filters)
+      toothLastMinusOneToothTime = toothLastToothTime;
+      toothLastToothTime = curTime;
+    } //Trigger filter
+  } //Sync check
 }
 
-/** Jeep4CNP Secondary.
- * 
- * */
 void triggerSec_Jeep1994CNP4cyl()
 {
   toothCurrentCount = 0; //Cam sensor goes high and resets tooth count back to zero, indicating that we're at the beginning of a new revolution
-  revolutionOne = 1; //Sequential revolution reset
   return;
 }
-
 /** Jeep4CNP Get RPM.
  * 
  * */
@@ -4854,9 +4833,6 @@ uint16_t getRPM_Jeep1994CNP4cyl()
    return stdGetRPM(360);
 }
 
-/** Jeep4CNP Get Crank Angle.
- * 
- * */
 int getCrankAngle_Jeep1994CNP4cyl()
 {
     //This is the current angle ATDC the engine is at. This is the last known position based on what tooth was last 'seen'. It is only accurate to the resolution of the trigger wheel (Eg 36-1 is 10 degrees)
@@ -4877,12 +4853,13 @@ int getCrankAngle_Jeep1994CNP4cyl()
     elapsedTime = (lastCrankAngleCalc - tempToothLastToothTime);
     crankAngle += timeToAngle(elapsedTime, CRANKMATH_METHOD_INTERVAL_REV);
 
+    if (crankAngle >= 720) { crankAngle -= 720; }
+    if (crankAngle > CRANK_ANGLE_MAX) { crankAngle -= CRANK_ANGLE_MAX; }
+    if (crankAngle < 0) { crankAngle += 360; }
+
     return crankAngle;
 }
 
-/** Jeep4CNP Set End Teeth.
- * 
- * */
 void triggerSetEndTeeth_Jeep1994CNP4cyl() //Set End Teeth may need more work for sequential
 {
 
