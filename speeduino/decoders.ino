@@ -4833,6 +4833,7 @@ void triggerPri_Jeep1994CNP4cyl()
 void triggerSec_Jeep1994CNP4cyl()
 {
   toothCurrentCount = 0; //reset the tooth count back to zero at cam signal.  Might need improvement for sequential ignition.
+  revolutionOne = 1; //Sequential revolution reset
   return;
 }
 uint16_t getRPM_Jeep1994CNP4cyl()
@@ -4852,7 +4853,7 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    if (toothCurrentCount == 0) { crankAngle = 174 + configPage4.triggerAngle; }  //This happens when cam sensor detect which is at 236 degrees ATDC but for some reason works last tooth angle before cam goes high.
+    if (toothCurrentCount == 0) { crankAngle = 174 + configPage4.triggerAngle; }  //questioning why this works as 174 when tooth count 0 which happens on cam sensor detect at 236 degrees ATDC but for some reason on 360 timing this works crank tooth angle before cam detect.
     else { crankAngle = toothAngles[(tempToothCurrentCount - 1)] + configPage4.triggerAngle;} //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
