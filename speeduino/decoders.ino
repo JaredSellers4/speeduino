@@ -4838,7 +4838,7 @@ void triggerSec_Jeep1994CNP4cyl()
 }
 uint16_t getRPM_Jeep1994CNP4cyl()
 {
-   return stdGetRPM(360);
+   return stdGetRPM(720);
 }
 int getCrankAngle_Jeep1994CNP4cyl()
 {
@@ -4853,7 +4853,7 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    if (toothCurrentCount == 0) { crankAngle = 174 + configPage4.triggerAngle; }  //questioning why this works as 174 when tooth count 0 which happens on cam sensor detect at 236 degrees ATDC but for some reason on 360 timing this works crank tooth angle before cam detect.
+    if (toothCurrentCount == 0) { crankAngle = 234 + configPage4.triggerAngle; }  //This occurs on cam trigger, but it was reported that a bad ignition firing issue on the 6cyl decoder was solved by setting this to a value lower than than reported cam trigger angle, so now set to 234 which is 60 degrees before tooth 1 rather than 236
     else { crankAngle = toothAngles[(tempToothCurrentCount - 1)] + configPage4.triggerAngle;} //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
