@@ -4772,22 +4772,22 @@ void triggerSetEndTeeth_Vmax()
 void triggerSetup_Jeep1994CNP4cyl()
 {
   triggerToothAngle = 0; //seems like an arbitrary intial value as this will next be set when code has found tooth 1.
-  toothAngles[0] = 294;
-  toothAngles[1] = 314;
-  toothAngles[2] = 334;
-  toothAngles[3] = 354;
-  toothAngles[4] = 474;
-  toothAngles[5] = 494;
-  toothAngles[6] = 514;
-  toothAngles[7] = 534;
-  toothAngles[8] = 654;
-  toothAngles[9] = 674;
-  toothAngles[10] = 694;
-  toothAngles[11] = 714;
-  toothAngles[12] = 114;
-  toothAngles[13] = 134;
-  toothAngles[14] = 154;
-  toothAngles[15] = 174;
+  toothAngles[0] = 296;
+  toothAngles[1] = 316;
+  toothAngles[2] = 336;
+  toothAngles[3] = 356;
+  toothAngles[4] = 476;
+  toothAngles[5] = 496;
+  toothAngles[6] = 516;
+  toothAngles[7] = 536;
+  toothAngles[8] = 656;
+  toothAngles[9] = 676;
+  toothAngles[10] = 696;
+  toothAngles[11] = 716;
+  toothAngles[12] = 116;
+  toothAngles[13] = 136;
+  toothAngles[14] = 156;
+  toothAngles[15] = 176;
 
   MAX_STALL_TIME = (3333UL * 123); //Minimum 50rpm. (3333uS is the time per degree at 50rpm). 3 degree tolerance as largest gap between teeth is 120 degrees.
   if(initialisationComplete == false) { toothCurrentCount = 17; toothLastToothTime = micros(); } //Set a startup value here to avoid filter errors when starting. This MUST have the initial check to prevent the fuel pump just staying on all the time
@@ -4803,32 +4803,27 @@ void triggerPri_Jeep1994CNP4cyl()
   {
     curTime = micros();
     curGap = curTime - toothLastToothTime;
-    if ( curGap >= triggerFilterTime )
+    if(toothCurrentCount == 0)
     {
-      if(toothCurrentCount == 0)
-      {
-         toothCurrentCount = 1; //Reset the counter
-         toothOneMinusOneTime = toothOneTime;
-         toothOneTime = curTime;
-         revolutionOne = !revolutionOne; //trying to allow sequential ignition.  This is sequential revolution flip
-         currentStatus.hasSync = true;
-         currentStatus.startRevolutions++; //Counter
-         triggerToothAngle = 120; //it seems like this should be 236 degrees since that is when cam goes high.  For some reason this is 60 on Jeep2000 decoder maybe because it is the largest gap so trying 120 here
-      }
-      else
-      {
-        toothCurrentCount++; //Increment the tooth counter
-        triggerToothAngle = toothAngles[(toothCurrentCount-1)] - toothAngles[(toothCurrentCount-2)]; //Calculate the last tooth gap in degrees
-      }
+       toothCurrentCount = 1; //Reset the counter
+       toothOneMinusOneTime = toothOneTime;
+       toothOneTime = curTime;
+       revolutionOne = !revolutionOne; //trying to allow sequential ignition.  This is sequential revolution flip
+       currentStatus.hasSync = true;
+       currentStatus.startRevolutions++; //Counter
+       triggerToothAngle = 120; //it seems like this should be 236 degrees since that is when cam goes high.  For some reason this is 60 on Jeep2000 decoder maybe because it is the largest gap so trying 120 here
+    }
+    else
+    {
+      toothCurrentCount++; //Increment the tooth counter
+      triggerToothAngle = toothAngles[(toothCurrentCount-1)] - toothAngles[(toothCurrentCount-2)]; //Calculate the last tooth gap in degrees
+    }
 
-      setFilter(curGap); //Recalc the new filter value
+    validTrigger = true; //Flag this pulse as being a valid trigger (ie that it passed filters)
 
-      validTrigger = true; //Flag this pulse as being a valid trigger (ie that it passed filters)
-
-      toothLastMinusOneToothTime = toothLastToothTime;
-      toothLastToothTime = curTime;
-    }  //does trigger filter check, then cam resets tooth count, then tooth count increment
-  } //Sync Check
+    toothLastMinusOneToothTime = toothLastToothTime;
+    toothLastToothTime = curTime; //end of if cam resets tooth count then start with tooth 1 knowing it's been 120 degrees, else tooth count increment
+  } //end of Sync Check
 }
 void triggerSec_Jeep1994CNP4cyl()
 {
@@ -4853,8 +4848,8 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    if (toothCurrentCount == 0) { crankAngle = 234 + configPage4.triggerAngle; }  //This occurs on cam trigger, but it was reported that a bad ignition firing issue on the 6cyl decoder was solved by setting this to a value lower than than reported cam trigger angle, so now set to 234 which is 60 degrees before tooth 1 rather than 236
-    else { crankAngle = toothAngles[(tempToothCurrentCount - 1)] + configPage4.triggerAngle;} //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
+    if (toothCurrentCount == 0) { crankAngle = 234; }  //This occurs on cam trigger, but it was reported that a bad ignition firing issue on the 6cyl decoder was solved by setting this to a value lower than than reported cam trigger angle, so now set to 234 which is 60 degrees before tooth 1 rather than 236
+    else { crankAngle = toothAngles[(tempToothCurrentCount - 1)]; } //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
     elapsedTime = (lastCrankAngleCalc - tempToothLastToothTime);
