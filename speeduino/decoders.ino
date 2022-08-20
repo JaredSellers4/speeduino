@@ -4827,9 +4827,11 @@ void triggerPri_Jeep1994CNP4cyl()
 }
 void triggerSec_Jeep1994CNP4cyl()
 {
-  toothCurrentCount = 0; //reset the tooth count back to zero at cam signal.  Might need improvement for sequential ignition.
-  revolutionOne = 1; //Sequential revolution reset
-  return;
+  if(toothCurrentCount > 16) //The cam signal should only happen after primary tooth 16 (or 17, at startup). So this is a cheap way to filter cam signal noise 
+  {
+    toothCurrentCount = 0; //reset pri tooth count back to zero at cam signal, indicating that we're at the beginning of a new revolution
+    revolutionOne = 1; //Sequential revolution reset
+  }
 }
 uint16_t getRPM_Jeep1994CNP4cyl()
 {
