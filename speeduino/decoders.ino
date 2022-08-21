@@ -4771,7 +4771,7 @@ void triggerSetEndTeeth_Vmax()
 */
 void triggerSetup_Jeep1994CNP4cyl()
 {
-  triggerToothAngle = 0; //seems like an arbitrary intial value as this will next be set when code has found tooth 1.
+  triggerToothAngle = 0; //seems like an arbitrary initial value as this will next be set when code has found tooth 1.
   toothAngles[0] = 296;
   toothAngles[1] = 316;
   toothAngles[2] = 336;
@@ -4789,7 +4789,7 @@ void triggerSetup_Jeep1994CNP4cyl()
   toothAngles[14] = 156;
   toothAngles[15] = 176;
 
-  MAX_STALL_TIME = (3333UL * 123); //Minimum 50rpm. (3333uS is the time per degree at 50rpm). 3 degree tolerance as largest gap between teeth is 120 degrees.
+  MAX_STALL_TIME = (3333UL * 120); //Minimum 50rpm. (3333uS is the time per degree at 50rpm). Largest gap between teeth is 120 degrees.
   if(initialisationComplete == false) { toothCurrentCount = 17; toothLastToothTime = micros(); } //Set a startup value here to avoid filter errors when starting. This MUST have the initial check to prevent the fuel pump just staying on all the time
   secondDerivEnabled = false;
   decoderIsSequential = true; //trying to allow sequential ignition
@@ -4827,7 +4827,7 @@ void triggerPri_Jeep1994CNP4cyl()
 }
 void triggerSec_Jeep1994CNP4cyl()
 {
-  if(toothCurrentCount > 16) //The cam signal should only happen after primary tooth 16 (or 17, at startup). So this is a cheap way to filter cam signal noise 
+  if(toothCurrentCount > 15) //The cam signal should only happen after primary tooth 16 (or 17, at startup). So this is a cheap way to filter cam signal noise 
   {
     toothCurrentCount = 0; //reset pri tooth count back to zero at cam signal, indicating that we're at the beginning of a new revolution
     revolutionOne = 1; //Sequential revolution reset
@@ -4850,7 +4850,7 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    if (toothCurrentCount == 0) { crankAngle = 234; }  //This occurs on cam trigger, but it was reported that a bad ignition firing issue on the 6cyl decoder was solved by setting this to a value lower than than reported cam trigger angle, so now set to 234 which is 60 degrees before tooth 1 rather than 236
+    if (toothCurrentCount == 0) { crankAngle = 176; }  //This occurs when the 'last tooth' seen was the cam tooth. Since  the tooth timings were taken on the previous crank tooth, the previous crank tooth angle is used here, not actual angle at cam trigger. 
     else { crankAngle = toothAngles[(tempToothCurrentCount - 1)]; } //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
