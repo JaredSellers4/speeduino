@@ -4850,8 +4850,7 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    if (toothCurrentCount == 0) { crankAngle = 176; }  //This occurs when the 'last tooth' seen was the cam tooth. Since  the tooth timings were taken on the previous crank tooth, the previous crank tooth angle is used here, not actual angle at cam trigger. 
-    else { crankAngle = toothAngles[(tempToothCurrentCount - 1)]; } //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
+    crankAngle = toothAngles[(tempToothCurrentCount - 1)] //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
     elapsedTime = (lastCrankAngleCalc - tempToothLastToothTime);
