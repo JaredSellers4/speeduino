@@ -4801,6 +4801,8 @@ void triggerPri_Jeep1994CNP4cyl()
   if(toothCurrentCount == 17) { currentStatus.hasSync = false; } //Indicates sync has not been achieved (Still waiting for 1 revolution of the crank to take place)
   else
   {
+    uint16_t nextTriggerToothAngle;
+    long nextGap; 
     curTime = micros();
     curGap = curTime - toothLastToothTime;
     if(toothCurrentCount == 0)
@@ -4818,12 +4820,18 @@ void triggerPri_Jeep1994CNP4cyl()
       toothCurrentCount++; //Increment the tooth counter
       triggerToothAngle = toothAngles[(toothCurrentCount-1)] - toothAngles[(toothCurrentCount-2)]; //Calculate the last tooth gap in degrees
     }
+    nextTriggerToothAngle = toothAngles[(toothCurrentCount)] - toothAngles[(toothCurrentCount-1)]; // gap to the next tooth
+    setFilter(curGap); //Recalc the new filter value
+    /* scale up curGap to be what the duration would be for the next tooth gap, if the crank speed doesn't change. 
+    i.e. given next tooth gap might be longer or shorter than current, predict what curgap will be to the next tooth, 
+    so on the next primary trigger, a  trigger filter can be set for it. */
 
+    nextGap = curGap * (nextTriggerToothAngle/triggerToothAngle); 
+    setFilter(nextGap); //Recalc the new filter value
     validTrigger = true; //Flag this pulse as being a valid trigger (ie that it passed filters)
-
     toothLastMinusOneToothTime = toothLastToothTime;
     toothLastToothTime = curTime; //end of if cam resets tooth count then start with tooth 1 knowing it's been 120 degrees, else tooth count increment
-  } //end of Sync Check
+  } //end of Sync Check and 
 }
 void triggerSec_Jeep1994CNP4cyl()
 {
@@ -4850,7 +4858,8 @@ int getCrankAngle_Jeep1994CNP4cyl()
     interrupts();
 
     int crankAngle;
-    crankAngle = toothAngles[(tempToothCurrentCount - 1)] //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
+    if (toothCurrentCount == 0) { crankAngle = 176; }  //This occurs on cam trigger, but it was reported that a bad ignition firing issue on the 6cyl decoder was solved by setting this to a value lower than than reported cam trigger angle, so now set to 234 which is 60 degrees before tooth 1 rather than 236
+    else { crankAngle = toothAngles[(tempToothCurrentCount - 1)]; } //Perform a lookup of the fixed toothAngles array to find what the angle of the last tooth passed was.
 
     //Estimate the number of degrees travelled since the last tooth}
     elapsedTime = (lastCrankAngleCalc - tempToothLastToothTime);
