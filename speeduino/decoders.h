@@ -38,7 +38,7 @@
 #define DECODER_NGC               22
 #define DECODER_VMAX              23
 #define DECODER_RENIX             24
-#define DECODER_ROVERMEMS		      25
+#define DECODER_ROVERMEMS         25
 #define DECODER_SUZUKI_K6A        26
 #define DECODER_HONDA_J32         27
 #define DECODER_Jeep1994CNP4cyl   28
