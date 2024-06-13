@@ -41,7 +41,7 @@
 #define DECODER_ROVERMEMS         25
 #define DECODER_SUZUKI_K6A        26
 #define DECODER_HONDA_J32         27
-#define DECODER_Jeep1994CNP4cyl   28
+#define DECODER_JEEP1990S4CYL     28
 
 #define BIT_DECODER_2ND_DERIV           0 //The use of the 2nd derivative calculation is limited to certain decoders. This is set to either true or false in each decoders setup routine
 #define BIT_DECODER_IS_SEQUENTIAL       1 //Whether or not the decoder supports sequential operation
@@ -258,7 +258,12 @@ uint16_t getRPM_SuzukiK6A(void);
 int getCrankAngle_SuzukiK6A(void);
 void triggerSetEndTeeth_SuzukiK6A(void);
 
-
+void triggerSetup_JEEP1990S4CYL(void);
+void triggerPri_JEEP1990S4CYL(void);
+void triggerSec_JEEP1990S4CYL(void);
+uint16_t getRPM_JEEP1990S4CYL(void);
+int getCrankAngle_JEEP1990S4CYL(void);
+void triggerSetEndTeeth_JEEP1990S4CYL(void);
 
 extern void (*triggerHandler)(void); //Pointer for the trigger function (Gets pointed to the relevant decoder)
 extern void (*triggerSecondaryHandler)(void); //Pointer for the secondary trigger function (Gets pointed to the relevant decoder)
