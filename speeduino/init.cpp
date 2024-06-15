@@ -3709,7 +3709,32 @@ void initialiseTriggers(void)
       
       attachInterrupt(triggerInterrupt, triggerHandler, primaryTriggerEdge);
       break;
+	  
+    case DECODER_Jeep1994CNP4cyl:
+      triggerSetup_Jeep1994CNP4cyl();
+      triggerHandler = triggerPri_Jeep1994CNP4cyl;
+      triggerSecondaryHandler = triggerSec_Jeep1994CNP4cyl;
+      decoderHasSecondary = true;
+      getRPM = getRPM_Jeep1994CNP4cyl;
+      getCrankAngle = getCrankAngle_Jeep1994CNP4cyl;
+      triggerSetEndTeeth = triggerSetEndTeeth_Jeep1994CNP4cyl;
+	  
+      if(configPage4.TrigEdge == 0) { primaryTriggerEdge = RISING; } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
+      else { primaryTriggerEdge = FALLING; }
+      secondaryTriggerEdge = RISING;
 
+      attachInterrupt(triggerInterrupt, triggerHandler, primaryTriggerEdge);
+      attachInterrupt(triggerInterrupt2, triggerSecondaryHandler, secondaryTriggerEdge);
+      break;
+
+    default:
+      triggerHandler = triggerPri_missingTooth;
+      getRPM = getRPM_missingTooth;
+      getCrankAngle = getCrankAngle_missingTooth;
+
+      if(configPage4.TrigEdge == 0) { attachInterrupt(triggerInterrupt, triggerHandler, RISING); } // Attach the crank trigger wheel interrupt (Hall sensor drags to ground when triggering)
+      else { attachInterrupt(triggerInterrupt, triggerHandler, FALLING); }
+      break;
 
     default:
       triggerHandler = triggerPri_missingTooth;
