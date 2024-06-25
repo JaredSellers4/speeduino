@@ -6073,8 +6073,9 @@ void triggerSec_JEEP1990S4CYL(void)
   if(toothCurrentCount > 15) //The secondary/cam signal should only happen after primary tooth 16 (or 17, at startup). So this is a cheap way to filter cam signal noise 
   {
     toothCurrentCount = 0; //All we need to do is reset the tooth count back to zero, indicating that we're at the beginning of a new revolution
-	revolutionOne = 1; //Sequential revolution reset
-  return;
+    revolutionOne = 1; //Sequential revolution reset
+    return;
+  }
 }
 /** Jeep 4cyl 1990s Get RPM.
  * 
