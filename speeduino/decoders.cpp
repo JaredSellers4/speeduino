@@ -6007,7 +6007,7 @@ void triggerSetEndTeeth_SuzukiK6A(void)
 /** Jeep 4cyl 1990s Setup.
  * 
  * */
-void triggerSetup_Jeep1994CNP4cyl()
+void triggerSetup_JEEP1990S4CYL()
 {
   triggerToothAngle = 0; //initial value as this will next be set when tooth 1/index 0 is found
   toothAngles[0] = 296;
