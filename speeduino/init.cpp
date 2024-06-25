@@ -3715,7 +3715,6 @@ void initialiseTriggers(void)
       triggerSetup_JEEP1990S4CYL();
       triggerHandler = triggerPri_JEEP1990S4CYL;
       triggerSecondaryHandler = triggerSec_JEEP1990S4CYL;
-      decoderHasSecondary = true;
       getRPM = getRPM_JEEP1990S4CYL;
       getCrankAngle = getCrankAngle_JEEP1990S4CYL;
       triggerSetEndTeeth = triggerSetEndTeeth_JEEP1990S4CYL;
