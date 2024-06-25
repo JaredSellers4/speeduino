@@ -6065,7 +6065,6 @@ void triggerPri_JEEP1990S4CYL(void)
     toothLastToothTime = curTime; //end of if cam resets tooth count then start with tooth 1 knowing it's been 120 degrees, else tooth count increment
     } //end filter for trigger pattern with varying gap angles
   } //end Sync check
-}
 /** Jeep 4cyl 1990s Secondary trigger/cam.
  * 
  * */
