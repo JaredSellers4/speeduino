@@ -434,6 +434,7 @@ void loop(void)
 
       //Begin the fuel calculation
       //Calculate an injector pulsewidth from the VE
+      currentStatus.afrTarget = calculateAfrTarget(afrTable, currentStatus, configPage2, configPage6);
       currentStatus.corrections = correctionsFuel();
 
       currentStatus.PW1 = PW(req_fuel_uS, currentStatus.VE, currentStatus.MAP, currentStatus.corrections, inj_opentime_uS);
@@ -1674,7 +1675,7 @@ void checkLaunchAndFlatShift()
 
   //Default flags to off
   currentStatus.launchingHard = false; 
-  BIT_CLEAR(currentStatus.spark, BIT_SPARK_HLAUNCH); 
+  BIT_CLEAR(currentStatus.status2, BIT_STATUS2_HLAUNCH); 
   currentStatus.flatShiftingHard = false;
 
   if (configPage6.launchEnabled && currentStatus.clutchTrigger && (currentStatus.clutchEngagedRPM < ((unsigned int)(configPage6.flatSArm) * 100)) && (currentStatus.TPS >= configPage10.lnchCtrlTPS) ) 
@@ -1687,7 +1688,7 @@ void checkLaunchAndFlatShift()
     {
       //HardCut rev limit for 2-step launch control.
       currentStatus.launchingHard = true; 
-      BIT_SET(currentStatus.spark, BIT_SPARK_HLAUNCH); 
+      BIT_SET(currentStatus.status2, BIT_STATUS2_HLAUNCH); 
     }
   } 
   else 
